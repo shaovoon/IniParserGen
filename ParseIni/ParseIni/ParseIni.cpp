@@ -15,7 +15,7 @@
 int main()
 {
 	std::string schema_file = "C:\\temp\\schema.ini";
-	std::string out_file = "C:\\Users\\wong\\Documents\\Visual Studio 2013\\Projects\\ParseIni\\ParseIni\\out.h";
+	std::string out_file = "C:\\Users\\wong\\Documents\\GitHub\\IniParserGen\\ParseIni\\ParseIni\\out.h";
 	
 	IniParserGen generator;
 	if(generator.ParseFile(schema_file))

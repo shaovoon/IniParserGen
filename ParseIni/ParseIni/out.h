@@ -80,7 +80,7 @@ public:
 		bool ret = false;
 		try
 		{
-			ret = Exists("StartDate")&&EndDate()>=StartDate();;
+			ret = Exists("StartDate") && EndDate() >= StartDate();
 		}
 		catch(std::exception&)
 		{
@@ -103,7 +103,7 @@ public:
 		bool ret = false;
 		try
 		{
-			ret = Alpha()>=0&&Alpha()<=255;
+			ret = Alpha() >= 0 && Alpha() <= 255;
 		}
 		catch(std::exception&)
 		{
