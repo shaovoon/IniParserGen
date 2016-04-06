@@ -52,52 +52,104 @@ public:
 			return false;
 		}
 		std::ostringstream oss;
-		const char* prologue = 
-		"#include <string>\n"
-		"#include <map>\n"
-		"#include <fstream>\n"
-		"#include <stdexcept>\n"
-		"#include \"minicsv.h\"\n"
-		"class MyIniFile\n"
-		"{\n"
-		"private:\n"
-		"	std::map<std::string, std::string> m_NameValueMap;\n"
-		"public:\n"
-		"	bool ParseFile(const std::string& file, /* OUT */ std::string& error)\n"
-		"	{\n"
-		"		m_NameValueMap.clear();\n"
-		"		csv::ifstream is(file.c_str());\n"
-		"		is.set_delimiter('=', \"$$\");\n"
-		"		if (is.is_open())\n"
-		"		{\n"
-		"			while (is.read_line())\n"
-		"			{\n"
-		"				std::string name;\n"
-		"				std::string value;\n"
-		"				is >> name;\n"
-		"				value = is.get_rest_of_line();\n"
-		"				m_NameValueMap[name] = value;\n"
-		"			}\n"
-		"			is.close();\n"
-		"			return Validate(error);\n"
-		"		}\n"
-		"		else\n"
-		"		{\n"
-		"			std::ostringstream oss;\n"
-		"			oss << \"File cannot be opened:\" << file;\n"
-		"			error = oss.str();\n"
-		"			return false;\n"
-		"		}\n"
-		"	}\n"
-		"	bool Exists(const std::string& name)\n"
-		"	{\n"
-		"		typedef std::map<std::string, std::string> Map;\n"
-		"		typedef Map::const_iterator MapConstIter;\n"
-		"		MapConstIter it = m_NameValueMap.find(name);\n"
-		"		return it != m_NameValueMap.end();\n"
-		"	}\n";
+		const char* prologue =
+			"#include <string>\n"
+			"#include <map>\n"
+			"#include <fstream>\n"
+			"#include <stdexcept>\n"
+			"#include \"minicsv.h\"\n"
+			"\n"
+			"class MyIniFile\n"
+			"{\n"
+			"private:\n"
+			"	std::map<std::string, std::string> m_NameValueMap;\n"
+			"	std::string m_File;\n"
+			"public:\n"
+			"	bool ParseFile(const std::string& file)\n"
+			"	{\n"
+			"		m_NameValueMap.clear();\n"
+			"		csv::ifstream is(file.c_str());\n"
+			"		is.set_delimiter('=', \"$$\");\n"
+			"		if (is.is_open())\n"
+			"		{\n"
+			"			m_File = file;\n"
+			"			while (is.read_line())\n"
+			"			{\n"
+			"				std::string name;\n"
+			"				std::string value;\n"
+			"				is >> name;\n"
+			"				value = is.get_rest_of_line();\n"
+			"				m_NameValueMap[csv::trim(name, \" \\t\")] = value;\n"
+			"			}\n"
+			"			is.close();\n"
+			"			return Validate();\n"
+			"		}\n"
+			"		else\n"
+			"		{\n"
+			"			std::ostringstream oss;\n"
+			"			oss << \"File cannot be opened:\" << file;\n"
+			"			throw std::runtime_error(oss.str().c_str());\n"
+			"		}\n"
+			"		return true;\n"
+			"	}\n"
+			"	bool WriteFile(const std::string& key, const std::string& val)\n"
+			"	{\n"
+			"		std::vector<std::pair<std::string, std::string> > vec;\n"
+			"		csv::ifstream is(m_File.c_str());\n"
+			"		is.set_delimiter('=', \"$$\");\n"
+			"		if (is.is_open())\n"
+			"		{\n"
+			"			while (is.read_line())\n"
+			"			{\n"
+			"				std::string name;\n"
+			"				std::string value;\n"
+			"				is >> name;\n"
+			"				value = is.get_rest_of_line();\n"
+			"\n"
+			"				if (csv::trim(name, \" \\t\") == key)\n"
+			"				{\n"
+			"					value = val;\n"
+			"				}\n"
+			"				vec.push_back(std::make_pair(name, value));\n"
+			"			}\n"
+			"			is.close();\n"
+			"\n"
+			"			csv::ofstream os(m_File.c_str());\n"
+			"			os.set_delimiter('=', \"$$\");\n"
+			"			if (os.is_open())\n"
+			"			{\n"
+			"				for (size_t i = 0; i<vec.size(); ++i)\n"
+			"				{\n"
+			"					os << vec[i].first << vec[i].second << NEWLINE;\n"
+			"				}\n"
+			"				os.flush();\n"
+			"				os.close();\n"
+			"			}\n"
+			"			else\n"
+			"			{\n"
+			"				std::ostringstream oss;\n"
+			"				oss << \"File cannot be opened for writing:\" << m_File;\n"
+			"				throw std::runtime_error(oss.str().c_str());\n"
+			"			}\n"
+			"		}\n"
+			"		else\n"
+			"		{\n"
+			"			std::ostringstream oss;\n"
+			"			oss << \"File cannot be opened for reading:\" << m_File;\n"
+			"			throw std::runtime_error(oss.str().c_str());\n"
+			"		}\n"
+			"		return true;\n"
+			"	}\n"
+			"	bool Exists(const std::string& name)\n"
+			"	{\n"
+			"		typedef std::map<std::string, std::string> Map;\n"
+			"		typedef Map::const_iterator MapConstIter;\n"
+			"		MapConstIter it = m_NameValueMap.find(name);\n"
+			"		return it != m_NameValueMap.end();\n"
+			"	}\n";
 
 		oss << prologue;
+
 		for(size_t i=0; i<m_InfoVec.size(); ++i)
 		{
 			if(m_InfoVec[i].type=="bool")
@@ -151,9 +203,29 @@ public:
 			}
 			oss << "\t}\n";
 
+
+			oss << "\tbool Set" << m_InfoVec[i].name << "(" << m_InfoVec[i].type << " val)\n";
+			oss << "\t{\n";
+			oss << "\t\tstd::ostringstream oss;\n";
+			if (m_InfoVec[i].type == "bool")
+			{
+				oss << "\t\toss << std::boolalpha << val;\n";
+			}
+			else
+			{
+				oss << "\t\toss << val;\n";
+			}
+			oss << "\t\tstd::string str_val = oss.str(); \n";
+			oss << "\t\tif (str_val != m_NameValueMap[\"" << m_InfoVec[i].name << "\"])\n";
+			oss << "\t\t{\n";
+			oss << "\t\t\tm_NameValueMap[\"" << m_InfoVec[i].name << "\"] = str_val;\n";
+			oss << "\t\t}\n";
+			oss << "\t\treturn WriteFile(\"" << m_InfoVec[i].name << "\", str_val);\n";
+			oss << "\t}\n";
+
 		}
 
-		oss << "\tbool Validate(std::string& error)\n";
+		oss << "\tbool Validate()\n";
 		oss << "\t{\n";
 		oss << "\t\tstd::ostringstream oss;\n";
 
@@ -165,8 +237,12 @@ public:
 			oss << "\t\t}\n";
 		}
 
-		oss << "\t\terror = oss.str();\n";
-		oss << "\t\treturn error.empty();\n";
+		oss << "\t\tstd::string error = oss.str();\n";
+		oss << "\t\tif (!error.empty())\n";
+		oss << "\t\t{\n";
+		oss << "\t\t\tthrow std::runtime_error(error.c_str());\n";
+		oss << "\t\t}\n";
+		oss << "\t\treturn true;\n";
 		oss << "\t}\n";
 
 		oss << "};\n";

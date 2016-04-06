@@ -9,13 +9,13 @@
 #include <vector>
 #include <map>
 #include <stdexcept>
-#include "out.h"
+#include "MyIniFile.h"
 #include "IniParserGen.h"
 
 int main()
 {
 	std::string schema_file = "C:\\temp\\schema.ini";
-	std::string out_file = "C:\\Users\\wong\\Documents\\GitHub\\IniParserGen\\ParseIni\\ParseIni\\out.h";
+	std::string out_file = "C:\\Users\\wong\\Documents\\GitHub\\IniParserGen\\ParseIni\\ParseIni\\MyIniFile.h";
 	
 	IniParserGen generator;
 	if(generator.ParseFile(schema_file))
@@ -48,12 +48,13 @@ int main()
 
 	MyIniFile ini_file;
 	std::string error;
-	if(ini_file.ParseFile("C:\\temp\\test.ini", error))
+	if(ini_file.ParseFile("C:\\temp\\test.ini"))
 	{
 		std::cout << ini_file.StartDate() << std::endl;
 		std::cout << ini_file.EndDate() << std::endl;
 		std::cout << ini_file.Alpha() << std::endl;
 		std::cout << std::boolalpha << ini_file.CheckFolder() << std::endl;
+		ini_file.SetAlpha(121);
 	}
 	else
 	{

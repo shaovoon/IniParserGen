@@ -3,15 +3,44 @@
 #include <fstream>
 #include <stdexcept>
 #include "minicsv.h"
+
 class MyIniFile
 {
 private:
 	std::map<std::string, std::string> m_NameValueMap;
+	std::string m_File;
 public:
-	bool ParseFile(const std::string& file, /* OUT */ std::string& error)
+	bool ParseFile(const std::string& file)
 	{
 		m_NameValueMap.clear();
 		csv::ifstream is(file.c_str());
+		is.set_delimiter('=', "$$");
+		if (is.is_open())
+		{
+			m_File = file;
+			while (is.read_line())
+			{
+				std::string name;
+				std::string value;
+				is >> name;
+				value = is.get_rest_of_line();
+				m_NameValueMap[csv::trim(name, " \t")] = value;
+			}
+			is.close();
+			return Validate();
+		}
+		else
+		{
+			std::ostringstream oss;
+			oss << "File cannot be opened:" << file;
+			throw std::runtime_error(oss.str().c_str());
+		}
+		return true;
+	}
+	bool WriteFile(const std::string& key, const std::string& val)
+	{
+		std::vector<std::pair<std::string, std::string> > vec;
+		csv::ifstream is(m_File.c_str());
 		is.set_delimiter('=', "$$");
 		if (is.is_open())
 		{
@@ -21,18 +50,40 @@ public:
 				std::string value;
 				is >> name;
 				value = is.get_rest_of_line();
-				m_NameValueMap[name] = value;
+
+				if (csv::trim(name, " \t") == key)
+				{
+					value = val;
+				}
+				vec.push_back(std::make_pair(name, value));
 			}
 			is.close();
-			return Validate(error);
+
+			csv::ofstream os(m_File.c_str());
+			os.set_delimiter('=', "$$");
+			if (os.is_open())
+			{
+				for (size_t i = 0; i<vec.size(); ++i)
+				{
+					os << vec[i].first << vec[i].second << NEWLINE;
+				}
+				os.flush();
+				os.close();
+			}
+			else
+			{
+				std::ostringstream oss;
+				oss << "File cannot be opened for writing:" << m_File;
+				throw std::runtime_error(oss.str().c_str());
+			}
 		}
 		else
 		{
 			std::ostringstream oss;
-			oss << "File cannot be opened:" << file;
-			error = oss.str();
-			return false;
+			oss << "File cannot be opened for reading:" << m_File;
+			throw std::runtime_error(oss.str().c_str());
 		}
+		return true;
 	}
 	bool Exists(const std::string& name)
 	{
@@ -64,6 +115,17 @@ public:
 		}
 		return ret;
 	}
+	bool SetStartDate(std::string val)
+	{
+		std::ostringstream oss;
+		oss << val;
+		std::string str_val = oss.str(); 
+		if (str_val != m_NameValueMap["StartDate"])
+		{
+			m_NameValueMap["StartDate"] = str_val;
+		}
+		return WriteFile("StartDate", str_val);
+	}
 	std::string EndDate()
 	{
 		if(!Exists("EndDate"))
@@ -87,6 +149,17 @@ public:
 		}
 		return ret;
 	}
+	bool SetEndDate(std::string val)
+	{
+		std::ostringstream oss;
+		oss << val;
+		std::string str_val = oss.str(); 
+		if (str_val != m_NameValueMap["EndDate"])
+		{
+			m_NameValueMap["EndDate"] = str_val;
+		}
+		return WriteFile("EndDate", str_val);
+	}
 	int Alpha()
 	{
 		if(!Exists("Alpha"))
@@ -109,6 +182,17 @@ public:
 		{
 		}
 		return ret;
+	}
+	bool SetAlpha(int val)
+	{
+		std::ostringstream oss;
+		oss << val;
+		std::string str_val = oss.str(); 
+		if (str_val != m_NameValueMap["Alpha"])
+		{
+			m_NameValueMap["Alpha"] = str_val;
+		}
+		return WriteFile("Alpha", str_val);
 	}
 	bool CheckFolder()
 	{
@@ -135,7 +219,18 @@ public:
 		std::string s(m_NameValueMap["CheckFolder"]);
 		return ret&&(s=="Y"||s=="1"||s=="true"||s=="N"||s=="0"||s=="false");
 	}
-	bool Validate(std::string& error)
+	bool SetCheckFolder(bool val)
+	{
+		std::ostringstream oss;
+		oss << std::boolalpha << val;
+		std::string str_val = oss.str(); 
+		if (str_val != m_NameValueMap["CheckFolder"])
+		{
+			m_NameValueMap["CheckFolder"] = str_val;
+		}
+		return WriteFile("CheckFolder", str_val);
+	}
+	bool Validate()
 	{
 		std::ostringstream oss;
 		if(!IsValidStartDate())
@@ -154,7 +249,11 @@ public:
 		{
 			oss << "CheckFolder validation fails!" << std::endl;
 		}
-		error = oss.str();
-		return error.empty();
+		std::string error = oss.str();
+		if (!error.empty())
+		{
+			throw std::runtime_error(error.c_str());
+		}
+		return true;
 	}
 };

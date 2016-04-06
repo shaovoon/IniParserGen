@@ -92,7 +92,7 @@
   <ItemGroup>
     <ClInclude Include="IniParserGen.h" />
     <ClInclude Include="minicsv.h" />
-    <ClInclude Include="out.h" />
+    <ClInclude Include="MyIniFile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
