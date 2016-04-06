@@ -45,6 +45,7 @@ private:
 		is.set_delimiter('=', "$$");
 		if (is.is_open())
 		{
+			bool found=false;
 			while (is.read_line())
 			{
 				std::string name;
@@ -55,8 +56,13 @@ private:
 				if (csv::trim(name, " \t") == key)
 				{
 					value = val;
+					found = true;
 				}
 				vec.push_back(std::make_pair(name, value));
+			}
+			if(!found)
+			{
+				vec.push_back(std::make_pair(key, val));
 			}
 			is.close();
 
@@ -178,7 +184,7 @@ public:
 		bool ret = false;
 		try
 		{
-			ret = Alpha() >= 0 && Alpha() <= 255;
+			ret = true;
 		}
 		catch(std::exception&)
 		{

@@ -7,6 +7,7 @@
 //
 // version 1.0   : Initial release
 // version 1.1   : Save file capability through setters
+// version 1.2   : Bug fix: insert the line if not found in file during saving
 
 
 #ifndef INI_PARSER_GENERATOR_H
@@ -46,9 +47,6 @@ public:
 
 				m_InfoVec.push_back(info);
 				is.set_delimiter('=', "$$");
-
-				// display 
-				//std::cout << info.name << "," << info.type << "," << info.validator << std::endl;
 			}
 			return m_InfoVec.size() > 0;
 		}
@@ -111,6 +109,7 @@ public:
 			"		is.set_delimiter('=', \"$$\");\n"
 			"		if (is.is_open())\n"
 			"		{\n"
+			"			bool found=false;\n"
 			"			while (is.read_line())\n"
 			"			{\n"
 			"				std::string name;\n"
@@ -121,8 +120,13 @@ public:
 			"				if (csv::trim(name, \" \\t\") == key)\n"
 			"				{\n"
 			"					value = val;\n"
+			"					found = true;\n"
 			"				}\n"
 			"				vec.push_back(std::make_pair(name, value));\n"
+			"			}\n"
+			"			if(!found)\n"
+			"			{\n"
+			"				vec.push_back(std::make_pair(key, val));\n"
 			"			}\n"
 			"			is.close();\n"
 			"\n"

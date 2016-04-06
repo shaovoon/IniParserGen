@@ -46,19 +46,21 @@ int main()
 		std::cerr << "ParseFile failed" << std::endl;
 	}
 
-	MyIniFile ini_file;
-	std::string error;
-	if(ini_file.ParseFile("C:\\temp\\test.ini"))
+	try
 	{
-		std::cout << ini_file.StartDate() << std::endl;
-		std::cout << ini_file.EndDate() << std::endl;
-		std::cout << ini_file.Alpha() << std::endl;
-		std::cout << std::boolalpha << ini_file.CheckFolder() << std::endl;
-		ini_file.SetAlpha(120);
+		MyIniFile ini_file;
+		if (ini_file.ParseFile("C:\\temp\\test.ini"))
+		{
+			std::cout << ini_file.StartDate() << std::endl;
+			std::cout << ini_file.EndDate() << std::endl;
+			std::cout << ini_file.Alpha() << std::endl;
+			std::cout << std::boolalpha << ini_file.CheckFolder() << std::endl;
+			ini_file.SetAlpha(120);
+		}
 	}
-	else
+	catch (std::exception& e)
 	{
-		std::cerr << error << std::endl;
+		std::cerr << "Exception thrown:" << e.what() << std::endl;
 	}
 
 	return 0;
