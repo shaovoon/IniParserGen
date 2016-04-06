@@ -37,6 +37,7 @@ public:
 		}
 		return true;
 	}
+private:
 	bool WriteFile(const std::string& key, const std::string& val)
 	{
 		std::vector<std::pair<std::string, std::string> > vec;
@@ -85,6 +86,7 @@ public:
 		}
 		return true;
 	}
+public:
 	bool Exists(const std::string& name)
 	{
 		typedef std::map<std::string, std::string> Map;
