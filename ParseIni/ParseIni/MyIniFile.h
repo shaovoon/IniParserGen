@@ -24,7 +24,7 @@ public:
 				std::string value;
 				is >> name;
 				value = is.get_rest_of_line();
-				m_NameValueMap[csv::trim(name, " \t")] = value;
+				m_NameValueMap[csv::trim(name, " \t")] = csv::trim(value, " \t");
 			}
 			is.close();
 			return Validate();

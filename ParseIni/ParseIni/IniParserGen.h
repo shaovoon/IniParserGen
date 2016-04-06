@@ -1,4 +1,12 @@
 // Ini file parser generator
+// The MIT License (MIT)
+// Ini file parser generator 1.1
+// Copyright (C) 2016, by Wong Shao Voon (shaovoon@yahoo.com)
+//
+// http://opensource.org/licenses/MIT
+//
+// version 1.0   : Initial release
+// version 1.1   : Save file capability through setters
 
 
 #ifndef INI_PARSER_GENERATOR_H
@@ -25,13 +33,16 @@ public:
 			{
 				Info info;
 				is >> info.name;
+				info.name = csv::trim(info.name, " \t");
 				is.set_delimiter(';', "$$");
 				is >> info.type;
 
-				if(info.type=="string")
+				info.type = csv::trim(info.type, " \t");
+				if (info.type == "string")
 					info.type="std::string";
 
 				info.validator = is.get_rest_of_line();
+				info.validator = csv::trim(info.validator, " \t");
 
 				m_InfoVec.push_back(info);
 				is.set_delimiter('=', "$$");
@@ -79,7 +90,7 @@ public:
 			"				std::string value;\n"
 			"				is >> name;\n"
 			"				value = is.get_rest_of_line();\n"
-			"				m_NameValueMap[csv::trim(name, \" \\t\")] = value;\n"
+			"				m_NameValueMap[csv::trim(name, \" \\t\")] = csv::trim(value, \" \\t\");\n"
 			"			}\n"
 			"			is.close();\n"
 			"			return Validate();\n"

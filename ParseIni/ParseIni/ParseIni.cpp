@@ -54,7 +54,7 @@ int main()
 		std::cout << ini_file.EndDate() << std::endl;
 		std::cout << ini_file.Alpha() << std::endl;
 		std::cout << std::boolalpha << ini_file.CheckFolder() << std::endl;
-		ini_file.SetAlpha(121);
+		ini_file.SetAlpha(120);
 	}
 	else
 	{
