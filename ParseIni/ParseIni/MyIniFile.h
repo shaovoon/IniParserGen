@@ -15,6 +15,7 @@ public:
 		m_NameValueMap.clear();
 		csv::ifstream is(file.c_str());
 		is.set_delimiter('=', "$$");
+		is.enable_terminate_on_blank_line(false);
 		if (is.is_open())
 		{
 			m_File = file;
@@ -43,6 +44,7 @@ private:
 		std::vector<std::pair<std::string, std::string> > vec;
 		csv::ifstream is(m_File.c_str());
 		is.set_delimiter('=', "$$");
+		is.enable_terminate_on_blank_line(false);
 		if (is.is_open())
 		{
 			bool found=false;
@@ -184,7 +186,7 @@ public:
 		bool ret = false;
 		try
 		{
-			ret = true;
+			ret = Alpha() >= 0 && Alpha() <= 255;
 		}
 		catch(std::exception&)
 		{
@@ -238,6 +240,40 @@ public:
 		}
 		return WriteFile("CheckFolder", str_val);
 	}
+	Color TintedColor()
+	{
+		if(!Exists("TintedColor"))
+		{
+			throw std::runtime_error("TintedColor does not exist");
+		}
+		Color val;
+		std::istringstream iss(m_NameValueMap["TintedColor"]);
+		iss >> val;
+		return val;
+	}
+	bool IsValidTintedColor()
+	{
+		bool ret = false;
+		try
+		{
+			ret = true;
+		}
+		catch(std::exception&)
+		{
+		}
+		return ret;
+	}
+	bool SetTintedColor(Color val)
+	{
+		std::ostringstream oss;
+		oss << val;
+		std::string str_val = oss.str(); 
+		if (str_val != m_NameValueMap["TintedColor"])
+		{
+			m_NameValueMap["TintedColor"] = str_val;
+		}
+		return WriteFile("TintedColor", str_val);
+	}
 	bool Validate()
 	{
 		std::ostringstream oss;
@@ -256,6 +292,10 @@ public:
 		if(!IsValidCheckFolder())
 		{
 			oss << "CheckFolder validation fails!" << std::endl;
+		}
+		if(!IsValidTintedColor())
+		{
+			oss << "TintedColor validation fails!" << std::endl;
 		}
 		std::string error = oss.str();
 		if (!error.empty())

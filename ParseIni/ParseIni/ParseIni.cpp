@@ -14,7 +14,7 @@
 
 int main()
 {
-	std::string schema_file = "C:\\temp\\schema.ini";
+	std::string schema_file = "schema.ini";
 	std::string out_file = "C:\\Users\\wong\\Documents\\GitHub\\IniParserGen\\ParseIni\\ParseIni\\MyIniFile.h";
 	
 	IniParserGen generator;
@@ -49,12 +49,13 @@ int main()
 	try
 	{
 		MyIniFile ini_file;
-		if (ini_file.ParseFile("C:\\temp\\test.ini"))
+		if (ini_file.ParseFile("test.ini"))
 		{
 			std::cout << ini_file.StartDate() << std::endl;
 			std::cout << ini_file.EndDate() << std::endl;
 			std::cout << ini_file.Alpha() << std::endl;
 			std::cout << std::boolalpha << ini_file.CheckFolder() << std::endl;
+			std::cout << ini_file.TintedColor() << std::endl;
 			ini_file.SetAlpha(120);
 		}
 	}

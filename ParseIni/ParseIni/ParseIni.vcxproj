@@ -90,6 +90,7 @@
     <ClCompile Include="ParseIni.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Color.h" />
     <ClInclude Include="IniParserGen.h" />
     <ClInclude Include="minicsv.h" />
     <ClInclude Include="MyIniFile.h" />
