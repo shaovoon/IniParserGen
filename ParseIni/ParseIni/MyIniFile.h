@@ -3,6 +3,7 @@
 #include <fstream>
 #include <stdexcept>
 #include "minicsv.h"
+#include "Color.h"
 
 class MyIniFile
 {
@@ -113,6 +114,13 @@ public:
 		iss >> val;
 		return val;
 	}
+	std::string GetSafeStartDate(std::string default_val)
+	{
+		if(Exists("StartDate"))
+			return StartDate();
+		else
+			return default_val;
+	}
 	bool IsValidStartDate()
 	{
 		bool ret = false;
@@ -147,6 +155,13 @@ public:
 		iss >> val;
 		return val;
 	}
+	std::string GetSafeEndDate(std::string default_val)
+	{
+		if(Exists("EndDate"))
+			return EndDate();
+		else
+			return default_val;
+	}
 	bool IsValidEndDate()
 	{
 		bool ret = false;
@@ -180,6 +195,13 @@ public:
 		std::istringstream iss(m_NameValueMap["Alpha"]);
 		iss >> val;
 		return val;
+	}
+	int GetSafeAlpha(int default_val)
+	{
+		if(Exists("Alpha"))
+			return Alpha();
+		else
+			return default_val;
 	}
 	bool IsValidAlpha()
 	{
@@ -216,6 +238,13 @@ public:
 		else if(s=="N"||s=="0"||s=="false") val=false;
 		return val;
 	}
+	bool GetSafeCheckFolder(bool default_val)
+	{
+		if(Exists("CheckFolder"))
+			return CheckFolder();
+		else
+			return default_val;
+	}
 	bool IsValidCheckFolder()
 	{
 		bool ret = false;
@@ -250,6 +279,13 @@ public:
 		std::istringstream iss(m_NameValueMap["TintedColor"]);
 		iss >> val;
 		return val;
+	}
+	Color GetSafeTintedColor(Color default_val)
+	{
+		if(Exists("TintedColor"))
+			return TintedColor();
+		else
+			return default_val;
 	}
 	bool IsValidTintedColor()
 	{

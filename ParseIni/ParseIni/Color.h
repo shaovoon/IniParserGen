@@ -4,6 +4,8 @@ struct Color
 {
 	Color() : r(0), g(0), b(0){}
 	Color(int _r, int _g, int _b) : r(_r), g(_g), b(_b){}
+	Color(const Color& other) : r(other.r), g(other.g), b(other.b){}
+
 	int r;
 	int g;
 	int b;

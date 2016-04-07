@@ -9,6 +9,7 @@
 // version 1.1   : Save file capability through setters
 // version 1.2   : Bug fix: insert the line if not found in file during saving
 // version 1.3   : Demo custom user-type support
+// version 1.4   : Added GetSafe* getters to return default value if entry do not exists!
 
 #ifndef INI_PARSER_GENERATOR_H
 #define INI_PARSER_GENERATOR_H
@@ -200,6 +201,14 @@ public:
 				oss << "\t\treturn val;\n";
 				oss << "\t}\n";
 			}
+
+			oss << "\t" << m_InfoVec[i].type << " GetSafe" << m_InfoVec[i].name << "(" << m_InfoVec[i].type  << " default_val)\n";
+			oss << "\t{\n";
+			oss << "\t\tif(Exists(\"" << m_InfoVec[i].name << "\"))\n";
+			oss << "\t\t\treturn " << m_InfoVec[i].name << "();\n";
+			oss << "\t\telse\n";
+			oss << "\t\t\treturn default_val;\n";
+			oss << "\t}\n";
 
 			oss << "\tbool IsValid" << m_InfoVec[i].name << "()\n";
 			oss << "\t{\n";
