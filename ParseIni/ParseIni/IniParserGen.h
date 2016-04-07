@@ -8,7 +8,7 @@
 // version 1.0   : Initial release
 // version 1.1   : Save file capability through setters
 // version 1.2   : Bug fix: insert the line if not found in file during saving
-
+// version 1.3   : Demo custom user-type support
 
 #ifndef INI_PARSER_GENERATOR_H
 #define INI_PARSER_GENERATOR_H
