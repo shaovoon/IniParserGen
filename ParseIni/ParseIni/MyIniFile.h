@@ -103,6 +103,7 @@ public:
 		MapConstIter it = m_NameValueMap.find(name);
 		return it != m_NameValueMap.end();
 	}
+	// Getter member functions
 	std::string StartDate()
 	{
 		if(!Exists("StartDate"))
@@ -113,36 +114,6 @@ public:
 		std::istringstream iss(m_NameValueMap["StartDate"]);
 		iss >> val;
 		return val;
-	}
-	std::string GetSafeStartDate(std::string default_val)
-	{
-		if(Exists("StartDate"))
-			return StartDate();
-		else
-			return default_val;
-	}
-	bool IsValidStartDate()
-	{
-		bool ret = false;
-		try
-		{
-			ret = true;
-		}
-		catch(std::exception&)
-		{
-		}
-		return ret;
-	}
-	bool SetStartDate(std::string val)
-	{
-		std::ostringstream oss;
-		oss << val;
-		std::string str_val = oss.str(); 
-		if (str_val != m_NameValueMap["StartDate"])
-		{
-			m_NameValueMap["StartDate"] = str_val;
-		}
-		return WriteFile("StartDate", str_val);
 	}
 	std::string EndDate()
 	{
@@ -155,36 +126,6 @@ public:
 		iss >> val;
 		return val;
 	}
-	std::string GetSafeEndDate(std::string default_val)
-	{
-		if(Exists("EndDate"))
-			return EndDate();
-		else
-			return default_val;
-	}
-	bool IsValidEndDate()
-	{
-		bool ret = false;
-		try
-		{
-			ret = Exists("StartDate") && EndDate() >= StartDate();
-		}
-		catch(std::exception&)
-		{
-		}
-		return ret;
-	}
-	bool SetEndDate(std::string val)
-	{
-		std::ostringstream oss;
-		oss << val;
-		std::string str_val = oss.str(); 
-		if (str_val != m_NameValueMap["EndDate"])
-		{
-			m_NameValueMap["EndDate"] = str_val;
-		}
-		return WriteFile("EndDate", str_val);
-	}
 	int Alpha()
 	{
 		if(!Exists("Alpha"))
@@ -195,36 +136,6 @@ public:
 		std::istringstream iss(m_NameValueMap["Alpha"]);
 		iss >> val;
 		return val;
-	}
-	int GetSafeAlpha(int default_val)
-	{
-		if(Exists("Alpha"))
-			return Alpha();
-		else
-			return default_val;
-	}
-	bool IsValidAlpha()
-	{
-		bool ret = false;
-		try
-		{
-			ret = Alpha() >= 0 && Alpha() <= 255;
-		}
-		catch(std::exception&)
-		{
-		}
-		return ret;
-	}
-	bool SetAlpha(int val)
-	{
-		std::ostringstream oss;
-		oss << val;
-		std::string str_val = oss.str(); 
-		if (str_val != m_NameValueMap["Alpha"])
-		{
-			m_NameValueMap["Alpha"] = str_val;
-		}
-		return WriteFile("Alpha", str_val);
 	}
 	bool CheckFolder()
 	{
@@ -238,12 +149,89 @@ public:
 		else if(s=="N"||s=="0"||s=="false") val=false;
 		return val;
 	}
+	Color TintedColor()
+	{
+		if(!Exists("TintedColor"))
+		{
+			throw std::runtime_error("TintedColor does not exist");
+		}
+		Color val;
+		std::istringstream iss(m_NameValueMap["TintedColor"]);
+		iss >> val;
+		return val;
+	}
+	// GetSafe* member functions
+	std::string GetSafeStartDate(std::string default_val)
+	{
+		if(Exists("StartDate"))
+			return StartDate();
+		else
+			return default_val;
+	}
+	std::string GetSafeEndDate(std::string default_val)
+	{
+		if(Exists("EndDate"))
+			return EndDate();
+		else
+			return default_val;
+	}
+	int GetSafeAlpha(int default_val)
+	{
+		if(Exists("Alpha"))
+			return Alpha();
+		else
+			return default_val;
+	}
 	bool GetSafeCheckFolder(bool default_val)
 	{
 		if(Exists("CheckFolder"))
 			return CheckFolder();
 		else
 			return default_val;
+	}
+	Color GetSafeTintedColor(Color default_val)
+	{
+		if(Exists("TintedColor"))
+			return TintedColor();
+		else
+			return default_val;
+	}
+	// IsValid* member functions
+	bool IsValidStartDate()
+	{
+		bool ret = false;
+		try
+		{
+			ret = true;
+		}
+		catch(std::exception&)
+		{
+		}
+		return ret;
+	}
+	bool IsValidEndDate()
+	{
+		bool ret = false;
+		try
+		{
+			ret = Exists("StartDate") && EndDate() >= StartDate();
+		}
+		catch(std::exception&)
+		{
+		}
+		return ret;
+	}
+	bool IsValidAlpha()
+	{
+		bool ret = false;
+		try
+		{
+			ret = Alpha() >= 0 && Alpha() <= 255;
+		}
+		catch(std::exception&)
+		{
+		}
+		return ret;
 	}
 	bool IsValidCheckFolder()
 	{
@@ -258,35 +246,6 @@ public:
 		std::string s(m_NameValueMap["CheckFolder"]);
 		return ret&&(s=="Y"||s=="1"||s=="true"||s=="N"||s=="0"||s=="false");
 	}
-	bool SetCheckFolder(bool val)
-	{
-		std::ostringstream oss;
-		oss << std::boolalpha << val;
-		std::string str_val = oss.str(); 
-		if (str_val != m_NameValueMap["CheckFolder"])
-		{
-			m_NameValueMap["CheckFolder"] = str_val;
-		}
-		return WriteFile("CheckFolder", str_val);
-	}
-	Color TintedColor()
-	{
-		if(!Exists("TintedColor"))
-		{
-			throw std::runtime_error("TintedColor does not exist");
-		}
-		Color val;
-		std::istringstream iss(m_NameValueMap["TintedColor"]);
-		iss >> val;
-		return val;
-	}
-	Color GetSafeTintedColor(Color default_val)
-	{
-		if(Exists("TintedColor"))
-			return TintedColor();
-		else
-			return default_val;
-	}
 	bool IsValidTintedColor()
 	{
 		bool ret = false;
@@ -299,6 +258,51 @@ public:
 		}
 		return ret;
 	}
+	// Setter member functions
+	bool SetStartDate(std::string val)
+	{
+		std::ostringstream oss;
+		oss << val;
+		std::string str_val = oss.str(); 
+		if (str_val != m_NameValueMap["StartDate"])
+		{
+			m_NameValueMap["StartDate"] = str_val;
+		}
+		return WriteFile("StartDate", str_val);
+	}
+	bool SetEndDate(std::string val)
+	{
+		std::ostringstream oss;
+		oss << val;
+		std::string str_val = oss.str(); 
+		if (str_val != m_NameValueMap["EndDate"])
+		{
+			m_NameValueMap["EndDate"] = str_val;
+		}
+		return WriteFile("EndDate", str_val);
+	}
+	bool SetAlpha(int val)
+	{
+		std::ostringstream oss;
+		oss << val;
+		std::string str_val = oss.str(); 
+		if (str_val != m_NameValueMap["Alpha"])
+		{
+			m_NameValueMap["Alpha"] = str_val;
+		}
+		return WriteFile("Alpha", str_val);
+	}
+	bool SetCheckFolder(bool val)
+	{
+		std::ostringstream oss;
+		oss << std::boolalpha << val;
+		std::string str_val = oss.str(); 
+		if (str_val != m_NameValueMap["CheckFolder"])
+		{
+			m_NameValueMap["CheckFolder"] = str_val;
+		}
+		return WriteFile("CheckFolder", str_val);
+	}
 	bool SetTintedColor(Color val)
 	{
 		std::ostringstream oss;
@@ -310,6 +314,7 @@ public:
 		}
 		return WriteFile("TintedColor", str_val);
 	}
+	// Validate member function
 	bool Validate()
 	{
 		std::ostringstream oss;

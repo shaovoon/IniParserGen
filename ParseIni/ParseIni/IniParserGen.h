@@ -57,7 +57,7 @@ public:
 	bool GenerateCode(std::string& output)
 	{
 		output = "";
-		if(m_InfoVec.size()==0)
+		if (m_InfoVec.size() == 0)
 		{
 			return false;
 		}
@@ -170,9 +170,10 @@ public:
 
 		oss << prologue;
 
-		for(size_t i=0; i<m_InfoVec.size(); ++i)
+		oss << "\t// Getter member functions\n";
+		for (size_t i = 0; i < m_InfoVec.size(); ++i)
 		{
-			if(m_InfoVec[i].type=="bool")
+			if (m_InfoVec[i].type == "bool")
 			{
 				oss << "\t" << m_InfoVec[i].type << " " << m_InfoVec[i].name << "()\n";
 				oss << "\t{\n";
@@ -201,15 +202,22 @@ public:
 				oss << "\t\treturn val;\n";
 				oss << "\t}\n";
 			}
+		}
 
-			oss << "\t" << m_InfoVec[i].type << " GetSafe" << m_InfoVec[i].name << "(" << m_InfoVec[i].type  << " default_val)\n";
+		oss << "\t// GetSafe* member functions\n";
+		for (size_t i = 0; i < m_InfoVec.size(); ++i)
+		{
+			oss << "\t" << m_InfoVec[i].type << " GetSafe" << m_InfoVec[i].name << "(" << m_InfoVec[i].type << " default_val)\n";
 			oss << "\t{\n";
 			oss << "\t\tif(Exists(\"" << m_InfoVec[i].name << "\"))\n";
 			oss << "\t\t\treturn " << m_InfoVec[i].name << "();\n";
 			oss << "\t\telse\n";
 			oss << "\t\t\treturn default_val;\n";
 			oss << "\t}\n";
-
+		}
+		oss << "\t// IsValid* member functions\n";
+		for (size_t i = 0; i < m_InfoVec.size(); ++i)
+		{
 			oss << "\tbool IsValid" << m_InfoVec[i].name << "()\n";
 			oss << "\t{\n";
 			oss << "\t\tbool ret = false;\n";
@@ -220,7 +228,7 @@ public:
 			oss << "\t\tcatch(std::exception&)\n";
 			oss << "\t\t{\n";
 			oss << "\t\t}\n";
-			if(m_InfoVec[i].type=="bool")
+			if (m_InfoVec[i].type == "bool")
 			{
 				oss << "\t\tstd::string s(m_NameValueMap[\"" << m_InfoVec[i].name << "\"]);\n";
 				oss << "\t\treturn ret&&(s==\"Y\"||s==\"1\"||s==\"true\"||s==\"N\"||s==\"0\"||s==\"false\");\n";
@@ -230,8 +238,11 @@ public:
 				oss << "\t\treturn ret;\n";
 			}
 			oss << "\t}\n";
+		}
 
-
+		oss << "\t// Setter member functions\n";
+		for (size_t i = 0; i < m_InfoVec.size(); ++i)
+		{
 			oss << "\tbool Set" << m_InfoVec[i].name << "(" << m_InfoVec[i].type << " val)\n";
 			oss << "\t{\n";
 			oss << "\t\tstd::ostringstream oss;\n";
@@ -253,6 +264,7 @@ public:
 
 		}
 
+		oss << "\t// Validate member function\n";
 		oss << "\tbool Validate()\n";
 		oss << "\t{\n";
 		oss << "\t\tstd::ostringstream oss;\n";
