@@ -15,7 +15,7 @@
 int main()
 {
 	std::string schema_file = "schema.ini";
-	std::string out_file = "MyIniFile.h";
+	std::string out_file = "MyIniFileOut.h";
 	
 	IniParserGen generator;
 	if(generator.ParseFile(schema_file))
